@@ -37,6 +37,7 @@ Multiple calendar views (month, week, day)
 
 # ScreenShot
 
+<img src="https://github.com/HaticeDilmac/sfcalender/assets/100489350/4ecdb8ce-6a0b-4d3e-b854-7c4bbca60969" width="200" height="400"> 
 ----------------------------------------------------------------------------------------
 
 ## Türkçe README
@@ -61,6 +62,11 @@ flutter run
 
 Uygulama başlatıldığında, takvim görünümü ile karşılaşacaksınız.
 Takvimdeki bir toplantıya tıkladığınızda, toplantının ayrıntılarını içeren bir iletişim kutusu görünecektir.
+
+#Ekran Görüntüsü
+
+
+<img src="https://github.com/HaticeDilmac/sfcalender/assets/100489350/4ecdb8ce-6a0b-4d3e-b854-7c4bbca60969" width="200" height="400"> 
 
 # Özellikler
 Takvimde toplantıları görüntüleme
