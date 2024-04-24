@@ -1,12 +1,7 @@
 # sfcalender
+ 
 
-Lisans
-Bu proje [Lisans Adı] ile lisanslanmıştır.
-
-csharp
-Copy code
-
-### İngilizce README
+### English README
 
 ``` 
 # Flutter Calendar App
@@ -39,4 +34,33 @@ Click on a meeting in the calendar to see the meeting details in a dialog box.
 View meetings on a calendar
 Click on meetings to view their details
 Multiple calendar views (month, week, day) 
+
+
+##Türkçe Readme
+
+```
+# Flutter Takvim Uygulaması
+
+Bu proje, Flutter kullanarak oluşturulmuş bir takvim uygulamasıdır. Kullanıcılar, belirli bir tarihteki toplantıların listesini görebilir ve her bir toplantıya tıklayarak ayrıntıları görüntüleyebilir.
+
+## Kurulum
+
+1. Flutter ve Dart'ı bilgisayarınıza kurun.
+2. Projeyi klonlayın:
+   ```bash
+   git clone https://github.com/kullanici_adi/proje_adi.git
+```
+# Kullanım
+Proje dizininde Flutter'ı çalıştırın:
+bash
+Copy code
+flutter run
+
+Uygulama başlatıldığında, takvim görünümü ile karşılaşacaksınız.
+Takvimdeki bir toplantıya tıkladığınızda, toplantının ayrıntılarını içeren bir iletişim kutusu görünecektir.
+
+# Özellikler
+Takvimde toplantıları görüntüleme
+Toplantılara tıklayarak ayrıntıları görüntüleme
+Farklı takvim görünümleri (ay, hafta, gün)
 
