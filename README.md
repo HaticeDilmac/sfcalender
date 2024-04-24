@@ -1,16 +1,42 @@
 # sfcalender
 
-A new Flutter project.
+Lisans
+Bu proje [Lisans Adı] ile lisanslanmıştır.
 
-## Getting Started
+csharp
+Copy code
 
-This project is a starting point for a Flutter application.
+### İngilizce README
 
-A few resources to get you started if this is your first Flutter project:
+``` 
+# Flutter Calendar App
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+This project is a calendar application built using Flutter. Users can view a list of meetings on a given date and can click on each meeting to view its details.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Installation
+
+1. Install Flutter and Dart on your computer.
+2. Clone the project:
+   ```bash
+   git clone https://github.com/username/project_name.git
+Navigate to the project directory and install the dependencies:
+bash
+Copy code
+cd project_name
+flutter pub get
+````
+
+# Usage
+In the project directory, run Flutter:
+bash
+Copy code
+flutter run
+
+When the app starts, you will see the calendar view.
+Click on a meeting in the calendar to see the meeting details in a dialog box.
+ 
+# Features
+View meetings on a calendar
+Click on meetings to view their details
+Multiple calendar views (month, week, day) 
+
