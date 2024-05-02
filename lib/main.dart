@@ -1,158 +1,540 @@
 import 'package:flutter/material.dart';
-import 'package:sfcalender/meeting.dart';
-import 'package:sfcalender/meeting_date_source.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:uuid/uuid.dart';
 
-void main() {
-  return runApp(const MaterialApp(home: CalenderWidget()));
+class Meeting {
+  Meeting({
+    required this.eventName,
+    required this.from,
+    required this.to,
+    required this.background,
+    this.isAllDay = false,
+  });
+
+  String eventName;
+  DateTime from;
+  DateTime to;
+  Color background;
+  bool isAllDay;
 }
 
-class CalenderWidget extends StatefulWidget {
-  const CalenderWidget({super.key});
-
-  @override
-  State<CalenderWidget> createState() => _CalenderWidgetState();
-}
-
-class _CalenderWidgetState extends State<CalenderWidget> {
-  List<Meeting> _getDataSource() {
-    final List<Meeting> meetings = <Meeting>[];
-    final DateTime today = DateTime.now();
-    final DateTime startTime = DateTime(today.year, today.month, today.day, 9);
-    final DateTime endTime = startTime.add(const Duration(hours: 2));
-    meetings.add(Meeting(
-      //if
-      eventName: 'Hatice Fitness',
-      from: startTime,
-      to: endTime,
-      background: const Color.fromARGB(255, 5, 45, 138),
-      isAllDay: false,
-    ));
-    meetings.add(Meeting(
-      eventName: 'Ayşe  Workout B',
-      from: DateTime(today.year, today.month, today.day, 10),
-      to: startTime.add(const Duration(hours: 2)),
-      background: const Color.fromARGB(255, 5, 45, 138),
-      isAllDay: false,
-    ));
-    meetings.add(Meeting(
-      eventName: 'Ahmet Swimming',
-      from: startTime,
-      to: endTime,
-      background: const Color.fromARGB(255, 5, 45, 138),
-      isAllDay: false,
-    ));
-    meetings.add(Meeting(
-      //if event null ,event color yellow
-      eventName: '',
-      from: startTime,
-      to: endTime,
-      background: const Color.fromARGB(255, 196, 189, 86),
-      isAllDay: false,
-    ));
-    return meetings;
+class MeetingDataSource extends CalendarDataSource {
+  MeetingDataSource(List<Meeting> meetings) {
+    appointments = meetings;
   }
 
-  CalendarView calendarView = CalendarView.month;
-  CalendarController calendarController = CalendarController();
+  @override
+  DateTime getStartTime(int index) {
+    return appointments![index].from;
+  }
+
+  @override
+  DateTime getEndTime(int index) {
+    return appointments![index].to;
+  }
+
+  @override
+  String getSubject(int index) {
+    return appointments![index].eventName;
+  }
+
+  @override
+  Color getColor(int index) {
+    return appointments![index].background;
+  }
+
+  @override
+  bool isAllDay(int index) {
+    return appointments![index].isAllDay;
+  }
+}
+
+void main() {
+  runApp(const MaterialApp(home: CalendarPage()));
+}
+
+class CalendarPage extends StatefulWidget {
+  const CalendarPage({super.key});
+
+  @override
+  State<CalendarPage> createState() => _CalendarPageState();
+}
+
+class _CalendarPageState extends State<CalendarPage> {
+  final List<Meeting> meetings = [];
+  final CalendarController _controller = CalendarController();
+  final Uuid uuid = Uuid();
+
+  void _addMeeting(String eventName, DateTime from, DateTime to) {
+    setState(() {
+      meetings.add(
+        Meeting(
+          eventName: eventName,
+          from: from,
+          to: to,
+          background: Colors.blue,
+        ),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         title: const Text('Calendar'),
+        centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Row(
-            children: [
-              OutlinedButton(
-                  onPressed: () {
-                    setState(() {
-                      calendarView = CalendarView.month;
-                      calendarController.view = calendarView;
-                    });
-                  },
-                  child: const Text('Mount View')),
-              OutlinedButton(
-                  onPressed: () {
-                    setState(() {
-                      calendarView = CalendarView.week;
-                      calendarController.view = calendarView;
-                    });
-                  },
-                  child: const Text('Week View')),
-              OutlinedButton(
-                  onPressed: () {
-                    setState(() {
-                      calendarView = CalendarView.day;
-                      calendarController.view = calendarView;
-                    });
-                  },
-                  child: const Text('Day View')),
-            ],
-          ),
-          // Expanded(
-          //   child: SfCalendar(
-          //     initialSelectedDate: DateTime.now(),
-          //     controller: calendarController,
-          //     view: CalendarView.month,
-          //     cellBorderColor: Colors.green,
-          //     dataSource: MeetingDataSource(_getDataSource()),
-          //     // selectionDecoration: BoxDecoration(color: Colors.amber),
-          //     monthViewSettings: const MonthViewSettings(
-          //         appointmentDisplayMode: MonthAppointmentDisplayMode.indicator,
-          //         showAgenda:
-          //             true), //haber açılım kısmını gösterir - tıklanan kısmın açıklaması
-          //     blackoutDates: [
-          //       DateTime.now().subtract(const Duration(hours: 48)),
-          //       DateTime.now().subtract(const Duration(hours: 24)),
-          //     ],
-          //   ),
-          // ),
-          Expanded(
-            child: SfCalendar(
-              initialSelectedDate: DateTime.now(),
-              controller: calendarController,
-              view: calendarView,
-              cellBorderColor: Colors.green,
-              dataSource: MeetingDataSource(_getDataSource()),
-              monthViewSettings: const MonthViewSettings(
-                appointmentDisplayMode: MonthAppointmentDisplayMode.indicator,
-                showAgenda: true,
-              ),
-              onTap: (CalendarTapDetails details) {
-                if (details.targetElement == CalendarElement.appointment) {
-                  final Meeting meeting = details.appointments![0];
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Meeting Details'),
-                        content: Text('Event Name: ${meeting.eventName}\n'
-                            'Start Time: ${meeting.from.toString()}\n'
-                            'End Time: ${meeting.to.toString()}'),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('Close'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                }
-              },
-              blackoutDates: [
-                DateTime.now().subtract(const Duration(hours: 48)),
-                DateTime.now().subtract(const Duration(hours: 24)),
-              ],
-            ),
-          ),
+      body: SfCalendar(
+        view: CalendarView.day,
+        controller: _controller,
+        dataSource: MeetingDataSource(meetings),
+        onTap: (CalendarTapDetails details) {
+          if (details.targetElement == CalendarElement.calendarCell) {
+            final DateTime selectedDate = details.date!;
+            _showAddMeetingDialog(context, selectedDate);
+          }
+        },
+        blackoutDates: [
+          DateTime.now().subtract(const Duration(days: 1)), // Dün
+          DateTime.now().add(const Duration(days: 1)), // Yarın
         ],
       ),
     );
   }
+
+  void _showAddMeetingDialog(BuildContext context, DateTime selectedDate) {
+    final TextEditingController eventNameController = TextEditingController();
+    final TextEditingController durationController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Add Meeting'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: eventNameController,
+                decoration: const InputDecoration(
+                  labelText: 'Event Name',
+                ),
+              ),
+              TextField(
+                controller: durationController,
+                decoration: const InputDecoration(
+                  labelText: 'Duration in hours',
+                ),
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                final String eventName = eventNameController.text;
+                final int duration = int.tryParse(durationController.text) ?? 1;
+                final DateTime startTime = selectedDate;
+                final DateTime endTime =
+                    startTime.add(Duration(hours: duration));
+
+                _addMeeting(eventName, startTime, endTime);
+
+                Navigator.of(context).pop();
+              },
+              child: const Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
+
+// import 'package:flutter/material.dart';
+// import 'package:syncfusion_flutter_calendar/calendar.dart';
+
+// void main() {
+//   runApp(const MyApp());
+// }
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Calendar App',
+//       home: const BlockSettingsPage(),
+//     );
+//   }
+// }
+
+// class BlockSettingsPage extends StatefulWidget {
+//   const BlockSettingsPage({super.key});
+
+//   @override
+//   State<BlockSettingsPage> createState() => _BlockSettingsPageState();
+// }
+
+// class _BlockSettingsPageState extends State<BlockSettingsPage> {
+//   final List<int> _blockedHours = [];
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text("Block Settings"),
+//         centerTitle: true,
+//       ),
+//       body: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         crossAxisAlignment: CrossAxisAlignment.center,
+//         children: [
+//           const Text(
+//             "Select hours to block:",
+//             style: TextStyle(fontSize: 18),
+//           ),
+//           const SizedBox(height: 20),
+//           ...List.generate(10, (index) {
+//             //selected block hours
+//             return CheckboxListTile(
+//               title: Text("Hour: $index"),
+//               value: _blockedHours.contains(index),
+//               onChanged: (bool? isSelected) {
+//                 setState(() {
+//                   if (isSelected == true) {
+//                     _blockedHours.add(index);
+//                   } else {
+//                     _blockedHours.remove(index);
+//                   }
+//                 });
+//               },
+//             );
+//           }),
+//           const SizedBox(height: 20),
+//           ElevatedButton(
+//             onPressed: () {
+//               Navigator.push(
+//                 context,
+//                 MaterialPageRoute(
+//                   builder: (context) =>
+//                       CalendarWidget(blockedHours: _blockedHours),
+//                 ),
+//               );
+//             },
+//             child: const Text("Go to Calendar"),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+// class CalendarWidget extends StatefulWidget {
+//   final List<int> blockedHours;
+
+//   const CalendarWidget({required this.blockedHours, super.key});
+
+//   @override
+//   State<CalendarWidget> createState() => _CalendarWidgetState();
+// }
+
+// class _CalendarWidgetState extends State<CalendarWidget> {
+//   final CalendarController _calendarController = CalendarController();
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text("Calendar"),
+//         centerTitle: true,
+//       ),
+//       body: SfCalendar(
+//         view: CalendarView.day,
+//         controller: _calendarController,
+//         onTap: (CalendarTapDetails details) {
+//           final DateTime selectedTime = details.date!;
+//           final int selectedHour = selectedTime.hour;
+
+//           // Eğer bloklanmış bir saate tıklanırsa
+//           if (widget.blockedHours.contains(selectedHour)) {
+//             _showBlockWarning(context);
+//           } else {
+//             // Bloklanmamış saatlerde etkinlik ekleyebilir
+//             _showAddEventDialog(context, selectedTime);
+//           }
+//         },
+//       ),
+//     );
+//   }
+
+//   void _showBlockWarning(BuildContext context) {
+//     showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return AlertDialog(
+//           title: const Text("Warning"),
+//           content:
+//               const Text("This time slot is blocked. You cannot add events."),
+//           actions: [
+//             TextButton(
+//               onPressed: () {
+//                 Navigator.of(context).pop();
+//               },
+//               child: const Text("OK"),
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+
+//   void _showAddEventDialog(BuildContext context, DateTime selectedTime) {
+//     final TextEditingController eventNameController = TextEditingController();
+
+//     showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return AlertDialog(
+//           title: const Text("Add Event"),
+//           content: TextField(
+//             controller: eventNameController,
+//             decoration: const InputDecoration(
+//               labelText: "Event Name",
+//             ),
+//           ),
+//           actions: [
+//             TextButton(
+//               onPressed: () {
+//                 Navigator.of(context).pop();
+//               },
+//               child: const Text("Cancel"),
+//             ),
+//             TextButton(
+//               onPressed: () {
+//                 final String eventName = eventNameController.text;
+//                 // Burada etkinlik ekleme işlemini gerçekleştirin
+//                 Navigator.of(context).pop();
+//               },
+//               child: const Text("Add"),
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // import 'package:flutter/material.dart';
+// // import 'package:syncfusion_flutter_calendar/calendar.dart';
+
+// // void main() {
+// //   runApp(const MyApp());
+// // }
+
+// // class MyApp extends StatelessWidget {
+// //   const MyApp({super.key});
+
+// //   @override
+// //   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Slot-based Calendar',
+//       home: const BlockSettingsPage(),
+//     );
+//   }
+// }
+
+// class BlockSettingsPage extends StatefulWidget {
+//   const BlockSettingsPage({super.key});
+
+//   @override
+//   State<BlockSettingsPage> createState() => _BlockSettingsPageState();
+// }
+
+// class _BlockSettingsPageState extends State<BlockSettingsPage> {
+//   final List<int> blockedHours = [];
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text("Block Settings"),
+//         centerTitle: true,
+//       ),
+//       body: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         crossAxisAlignment: CrossAxisAlignment.center,
+//         children: [
+//           const Text(
+//             "Select hours to block:",
+//             style: TextStyle(fontSize: 18),
+//           ),
+//           const SizedBox(height: 20),
+//           ...List.generate(10, (index) {
+//             return CheckboxListTile(
+//               title: Text("Hour: $index"),
+//               value: blockedHours.contains(index),
+//               onChanged: (bool? isSelected) {
+//                 setState(() {
+//                   if (isSelected == true) {
+//                     blockedHours.add(index);
+//                   } else {
+//                     blockedHours.remove(index);
+//                   }
+//                 });
+//               },
+//             );
+//           }),
+//           const SizedBox(height: 20),
+//           ElevatedButton(
+//             onPressed: () {
+//               final List<Map<String, int>> slots =
+//                   calculateWorkSlots(blockedHours);
+
+//               Navigator.push(
+//                 context,
+//                 MaterialPageRoute(
+//                   builder: (context) => CalendarWidget(
+//                     slots: slots,
+//                   ),
+//                 ),
+//               );
+//             },
+//             child: const Text("Go to Calendar"),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   List<Map<String, int>> calculateWorkSlots(List<int> blockedHours) {
+//     List<Map<String, int>> workSlots = [];
+//     int startHour = 0;
+
+//     while (startHour < 24) {
+//       if (!blockedHours.contains(startHour)) {
+//         int endHour = startHour;
+
+//         while (endHour < 24 && !blockedHours.contains(endHour)) {
+//           endHour++;
+//         }
+
+//         workSlots.add({"start": startHour, "end": endHour - 1});
+//         startHour = endHour;
+//       } else {
+//         startHour++;
+//       }
+//     }
+
+//     return workSlots;
+//   }
+// }
+
+// class CalendarWidget extends StatelessWidget {
+//   final List<Map<String, int>> slots;
+
+//   const CalendarWidget({required this.slots, super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text("Calendar"),
+//         centerTitle: true,
+//       ),
+//       body: SfCalendar(
+//         view: CalendarView.day,
+//         onTap: (CalendarTapDetails details) {
+//           final int selectedHour = details.date!.hour;
+
+//           bool isBlocked = slots.every((slot) =>
+//               selectedHour < slot["start"]! || selectedHour > slot["end"]!);
+
+//           if (isBlocked) {
+//             _showBlockWarning(context);
+//           } else {
+//             _showAddEventDialog(context);
+//           }
+//         },
+//       ),
+//     );
+//   }
+
+//   void _showBlockWarning(BuildContext context) {
+//     showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return AlertDialog(
+//           title: const Text("Blocked"),
+//           content: const Text("This slot is blocked. You cannot add events."),
+//           actions: [
+//             TextButton(
+//               onPressed: () {
+//                 Navigator.of(context).pop();
+//               },
+//               child: const Text("OK"),
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+
+//   void _showAddEventDialog(BuildContext context) {
+//     final TextEditingController eventNameController = TextEditingController();
+
+//     showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return AlertDialog(
+//           title: const Text("Add Event"),
+//           content: TextField(
+//             controller: eventNameController,
+//             decoration: const InputDecoration(
+//               labelText: "Event Name",
+//             ),
+//           ),
+//           actions: [
+//             TextButton(
+//               onPressed: () {
+//                 Navigator.of(context).pop();
+//               },
+//               child: const Text("Cancel"),
+//             ),
+//             TextButton(
+//               onPressed: () {
+//                 final String eventName = eventNameController.text;
+//                 Navigator.of(context).pop();
+//               },
+//               child: const Text("Add"),
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+// }
