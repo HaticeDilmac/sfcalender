@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sfcalender/calendar_page.dart';
 import 'package:sfcalender/general_info.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:uuid/uuid.dart';
 
 class Meeting {
   Meeting({
