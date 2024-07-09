@@ -1,51 +1,48 @@
 import 'package:flutter/material.dart';
-import 'package:sfcalender/meeting.dart';
-import 'package:sfcalender/meeting_date_source.dart';
+import 'package:sfcalender/general_info.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-void main() {
-  return runApp(const MaterialApp(home: CalenderWidget()));
+class Meeting {
+  Meeting({
+    required this.eventName,
+    required this.from,
+    required this.to,
+    required this.background,
+    this.isAllDay = false,
+  });
+
+  String eventName;
+  DateTime from;
+  DateTime to;
+  Color background;
+  bool isAllDay;
 }
 
-class CalenderWidget extends StatefulWidget {
-  const CalenderWidget({super.key});
-
-  @override
-  State<CalenderWidget> createState() => _CalenderWidgetState();
-}
-
-class _CalenderWidgetState extends State<CalenderWidget> {
-  List<Meeting> _getDataSource() {
-    final List<Meeting> meetings = <Meeting>[];
-    final DateTime today = DateTime.now();
-    final DateTime startTime = DateTime(today.year, today.month, today.day, 9);
-    final DateTime endTime = startTime.add(const Duration(hours: 2));
-    meetings.add(Meeting(
-      eventName: 'Hatice Dilmac Fitness',
-      from: startTime,
-      to: endTime,
-      background: Colors.pink,
-      isAllDay: false,
-    ));
-    meetings.add(Meeting(
-      eventName: 'Ayşe  Workout B',
-      from: DateTime(today.year, today.month, today.day, 10),
-      to: startTime.add(const Duration(hours: 2)),
-      background: Colors.blue,
-      isAllDay: false,
-    ));
-    meetings.add(Meeting(
-      eventName: 'Ahmet Swimming',
-      from: startTime,
-      to: endTime,
-      background: Colors.green,
-      isAllDay: false,
-    ));
-    return meetings;
+class MeetingDataSource extends CalendarDataSource {
+  MeetingDataSource(List<Meeting> meetings) {
+    appointments = meetings;
   }
 
-  CalendarView calendarView = CalendarView.month;
-  CalendarController calendarController = CalendarController();
+  @override
+  DateTime getStartTime(int index) {
+    return appointments![index].from;
+  }
+
+  @override
+  DateTime getEndTime(int index) {
+    return appointments![index].to;
+  }
+
+  @override
+  String getSubject(int index) {
+    return appointments![index].eventName;
+  }
+
+  @override
+  Color getColor(int index) {
+    return appointments![index].background;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,44 +82,9 @@ class _CalenderWidgetState extends State<CalenderWidget> {
           ),
           Expanded(
             child: SfCalendar(
-              view: CalendarView.schedule,
-              scheduleViewSettings: const ScheduleViewSettings(
-                  weekHeaderSettings: WeekHeaderSettings(
-                      startDateFormat: 'dd MMM ',
-                      endDateFormat: 'dd MMM, yy',
-                      height: 50,
-                      textAlign: TextAlign.center,
-                      backgroundColor: Color(0xff3528be),
-                      weekTextStyle: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 15,
-                      )),
-                  monthHeaderSettings: MonthHeaderSettings(
-                      monthFormat: 'MMMM, yyyy',
-                      height: 70,
-                      textAlign: TextAlign.left,
-                      backgroundColor: Color(0xff3528be),
-                      monthTextStyle: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400)),
-                  dayHeaderSettings: DayHeaderSettings(
-                      dayFormat: 'EEEE',
-                      width: 70,
-                      dayTextStyle: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                      dateTextStyle: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ))),
               initialSelectedDate: DateTime.now(),
               controller: calendarController,
-
+              view: CalendarView.month,
               cellBorderColor: Colors.green,
               dataSource: MeetingDataSource(_getDataSource()),
               // selectionDecoration: BoxDecoration(color: Colors.amber),
