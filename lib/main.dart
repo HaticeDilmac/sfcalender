@@ -85,9 +85,44 @@ class _CalenderWidgetState extends State<CalenderWidget> {
           ),
           Expanded(
             child: SfCalendar(
+              view: CalendarView.schedule,
+              scheduleViewSettings: const ScheduleViewSettings(
+                  weekHeaderSettings: WeekHeaderSettings(
+                      startDateFormat: 'dd MMM ',
+                      endDateFormat: 'dd MMM, yy',
+                      height: 50,
+                      textAlign: TextAlign.center,
+                      backgroundColor: Color(0xff3528be),
+                      weekTextStyle: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 15,
+                      )),
+                  monthHeaderSettings: MonthHeaderSettings(
+                      monthFormat: 'MMMM, yyyy',
+                      height: 70,
+                      textAlign: TextAlign.left,
+                      backgroundColor: Color(0xff3528be),
+                      monthTextStyle: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400)),
+                  dayHeaderSettings: DayHeaderSettings(
+                      dayFormat: 'EEEE',
+                      width: 70,
+                      dayTextStyle: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
+                      dateTextStyle: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ))),
               initialSelectedDate: DateTime.now(),
               controller: calendarController,
-              view: CalendarView.month,
+
               cellBorderColor: Colors.green,
               dataSource: MeetingDataSource(_getDataSource()),
               // selectionDecoration: BoxDecoration(color: Colors.amber),
