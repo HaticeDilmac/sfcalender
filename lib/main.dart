@@ -10,7 +10,7 @@ class Meeting {
     required this.background,
     this.isAllDay = false,
   });
-
+/////
   String eventName;
   DateTime from;
   DateTime to;
